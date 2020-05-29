@@ -30,6 +30,10 @@ def rescale(size):
     size = int(size)
     return int(size / _factor * 100)
 
+def centerGeometryS(pos="0*0"):
+    w, h = pos.split("*")
+    return centerGeometry(int(w), int(h))
+
 def centerGeometry(width=0, height=0):
     xoff = GetSystemMetrics(0)/2 - width /2
     yoff = GetSystemMetrics(1)/2 - height/2
