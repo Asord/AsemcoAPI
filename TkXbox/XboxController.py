@@ -122,8 +122,8 @@ class XboxController(EventDispatcher):
             old_val = self.translate(old_val, data_size)
             new_val = self.translate(new_val, data_size)
 
-            if ((old_val != new_val and (new_val > 0.08000000000000000 or new_val < -0.08000000000000000) and abs(old_val - new_val) > 0.00000000500000000) or
-               (axis == 'right_trigger' or axis == 'left_trigger') and new_val == 0 and abs(old_val - new_val) > 0.00000000500000000):
+            if (axis == 'right_trigger' or axis == 'left_trigger' or
+                new_val > 0.08000000000000000 or new_val < -0.08000000000000000):
                 self.dispatch_event('on_axis', axis, new_val)
 
     def dispatch_button_events(self, state):
