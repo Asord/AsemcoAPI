@@ -72,26 +72,18 @@ def _contains_list(items):
             break
     return result
 
-
-class TkJson(tkinter.Tk):
+class TkGen:
     """
     Simple class which wraps Tk and uses some JSON to contruct a GUI.
     """
 
-    menu = None
     widgets = {}
 
     def __init__(self, filename, title='Tk', prefer_tk=True, file_type='json'):
-        """
-        Initialize a Tk root and created the UI from a JSON file.
 
-        Returns the Tk root.
-        """
-        # Needs to be done this way - because base class do not derive from
-        # object :-(
-        tkinter.Tk.__init__(self)
+
         self.prefer_tk = prefer_tk
-        self.title(title)
+        self.vars = {}
 
         if file_type == 'json':
             user_interface = json.load(open(filename)) if os.path.isfile(
@@ -162,6 +154,9 @@ class TkJson(tkinter.Tk):
             except Exception as exp:
                 if len(opt) == 0:
                     break
+                if "name" in opt:
+                    print(str(exp) + " for widget " + opt["name"])
+
                 del opt[str(exp).split()[2][2:-1]]
                 # widget = widget_factory(parent,**opt)
 
@@ -257,7 +252,7 @@ class TkJson(tkinter.Tk):
     # Rest is public use :-)
     ##
 
-    def button(self, name, cmd, focus=False):
+    def button(self, name, cmd, focus=False, **kwargs):
         """
         Associate a Tk widget with a function.
 
@@ -271,23 +266,35 @@ class TkJson(tkinter.Tk):
         if focus:
             item.focus_set()
 
-    def checkbox(self, name, focus=False):
+        if len(kwargs) > 0:
+            self.itemconfig(item, **kwargs)
+
+        return item
+
+    def checkbox(self, name, focus=False, **kwargs):
         """
         Associates a IntVar with a checkbox.
 
         name -- Name of the Checkbox.
         focus -- indicates wether this item has the focus.
         """
-        var = tkinter.IntVar()
+        if name not in self.vars:
+            self.vars[name] = tkinter.IntVar()
+        var = self.vars[name]
+
         item = self.get(name)
         item.config(variable=var)
 
         if focus:
             item.focus_set()
 
+
+        if len(kwargs) > 0:
+            self.itemconfig(item, **kwargs)
+
         return var
 
-    def entry(self, name, key=None, cmd=None, focus=False):
+    def entry(self, name, key=None, cmd=None, focus=False, **kwargs):
         """
         Returns the text of a TK widget.
 
@@ -296,7 +303,9 @@ class TkJson(tkinter.Tk):
         cmd -- If key is defined cmd needs to be defined.
         focus -- Indicates wether this entry should take focus.
         """
-        var = tkinter.StringVar()
+        if name not in self.vars:
+            self.vars[name] = tkinter.StringVar()
+        var = self.vars[name]
 
         item = self.get(name)
         item.config(textvariable=var)
@@ -307,9 +316,12 @@ class TkJson(tkinter.Tk):
         if key is not None and cmd is not None:
             item.bind(key, cmd)
 
+        if len(kwargs) > 0:
+            self.itemconfig(item, **kwargs)
+
         return var
 
-    def label(self, name):
+    def label(self, name, **kwargs):
         """
         Associate a StringVar with a label.
 
@@ -318,6 +330,10 @@ class TkJson(tkinter.Tk):
         var = tkinter.StringVar()
         item = self.get(name)
         item.config(textvariable=var)
+
+        if len(kwargs) > 0:
+            self.itemconfig(item, **kwargs)
+
         return var
 
     def get(self, name):
@@ -376,7 +392,7 @@ class TkJson(tkinter.Tk):
             for key in commands:
                 self.menu.add_command(label=key, command=commands[key])
             return self.menu
-        elif name is not None and popup is False and len(commands.keys()) > 0:
+        elif name is not None and popup is False :  # and len(commands.keys()) > 0
             if parent is None:
                 # Create a top-level drop down menu.
                 tmp_menu = tkinter.Menu(self.menu, tearoff=0)
@@ -448,6 +464,33 @@ class TkJson(tkinter.Tk):
         index -- If index < current # of items - insert at the top.
         """
         return treeview.insert(parent, index, text=name, values=values)
+
+
+    def itemconfig(self, item, **kwargs):
+        if type(item) is str: item = self.get(item)
+
+        for arg, val in kwargs.items():
+            item[arg] = val
+
+        return item
+
+
+class TkJson(tkinter.Tk, TkGen):
+    menu = None
+
+    def __init__(self, filename, title="Tk", prefer_tk=True, file_type='json'):
+        """
+        Initialize a Tk root and created the UI from a JSON file.
+
+        Returns the Tk root.
+        """
+        # Needs to be done this way - because base class do not derive from
+        # object :-(
+        tkinter.Tk.__init__(self)
+        self.prefer_tk = prefer_tk
+        self.title(title)
+
+        TkGen.__init__(self, filename, title, prefer_tk, file_type)
 
 
 class TkYaml(TkJson):
