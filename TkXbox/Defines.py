@@ -23,7 +23,7 @@ JOY_RIGHT_TRIGER = "right_trigger"
 JOY_LEFT_THUMB_Y = "l_thumb_y"
 JOY_LEFT_THUMB_X = "l_thumb_x"
 JOY_RIGHT_THUMB_Y = "r_thumb_y"
-JOY_RIGHT_THUMB_X = "r_thumb_y"
+JOY_RIGHT_THUMB_X = "r_thumb_x"
 
 ERROR_DEVICE_NOT_CONNECTED = 1167
 ERROR_SUCCESS = 0
