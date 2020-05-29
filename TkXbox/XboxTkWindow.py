@@ -19,7 +19,7 @@ class XboxTkWindow(TkJson, XboxController):
         self.__xBindings.append((button, func))
 
     def joybind(self, joy, func):
-        self.__xAxis.append((joy, func, self.__xJoyLastEventID))
+        self.__xAxis.append((joy, func, self.__xJoyLastID))
         self.__xJoyLastID += 1
 
     def _StartXHandler(self):
@@ -38,10 +38,8 @@ class XboxTkWindow(TkJson, XboxController):
 
             for signal in self.__xAxis:
                 if axis == signal[0]:
-                    if self.__xJoyLastEventID != signal[2]:
-                        self.__xJoyLastEventID = signal[2]
-                        signal[1](value)
-                        return
+                    signal[1](value)
+                    return
 
         def callback():
             self.dispatch_events()
