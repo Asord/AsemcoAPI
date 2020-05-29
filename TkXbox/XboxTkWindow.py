@@ -1,5 +1,5 @@
 from AsemcoAPI.TkXbox.XboxController import XboxController
-from tkgen.gengui import TkJson
+from AsemcoAPI.tkgen.gengui import TkJson
 
 class XboxTkWindow(TkJson, XboxController):
 
