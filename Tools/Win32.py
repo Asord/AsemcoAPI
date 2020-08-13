@@ -1,5 +1,8 @@
-from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess, Process
-from sys import modules
+try:
+    from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess, Process
+    from pywinauto import Desktop
+except ImportError as ie:
+    raise IndexError("To use AsemcoAPI.Tools.Win32 you need to have 'psutil' and 'pywinauto' libraries") from ie
 
 
 def IsProcessRunning(processName):
@@ -12,14 +15,12 @@ def IsProcessRunning(processName):
     return False
 
 def GetAllForegroundProcesses(ignoreList=None):
-    import pywinauto
-
     ignoreList = [] if ignoreList is None else ignoreList
     ignoreList += ["explorer"] # minimal ignore list must include windows relative apps
 
     processList = []
 
-    windows = pywinauto.Desktop(backend="uia").windows()
+    windows = Desktop(backend="uia").windows()
     for w in windows:
         name = Process(w.process_id()).name().replace(".exe", "")
         if name not in ignoreList:

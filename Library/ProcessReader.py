@@ -4,8 +4,12 @@ from win32api import GetSystemMetrics
 from win32con import SM_CXICON
 from win32ui import CreateDCFromHandle, CreateBitmap
 
-from psutil import Process
-from PIL import Image
+try:
+    from psutil import Process
+    from PIL import Image
+except ImportError as ie:
+    raise ImportError("To use AsemcoAPI.Library.ProcessReader, you need to install 'psutil' and 'PIL' libraries.") from ie
+
 
 def _callback(hwnd, hwnds):
     if IsWindowVisible(hwnd) and IsWindowEnabled(hwnd):
